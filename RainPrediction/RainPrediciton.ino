@@ -4,22 +4,14 @@
 // ----------- SENSOR PINS ------------
 const int LIGHT_PIN = A0;
 const int TEMP_PIN  = A1;
+const int HUMID_PIN = A2;
 
 // ----------- LCD (PARALLEL) --------
-// Wiring:
-//
-// RS -> pin 7
-// E  -> pin 8
-// D4 -> pin 9
-// D5 -> pin 10
-// D6 -> pin 11
-// D7 -> pin 12
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
 void setup() {
     Serial.begin(9600);
 
-    // Initialize LCD
     lcd.begin(16, 2);
     lcd.clear();
     lcd.setCursor(0, 0);
@@ -32,30 +24,33 @@ void loop() {
     // --- Read sensors ---
     int rawLight = analogRead(LIGHT_PIN);
     int rawTemp  = analogRead(TEMP_PIN);
+    int rawHumid = analogRead(HUMID_PIN);
 
-    // --- Normalize to 0–1 (adjust if needed based on training) ---
-    float light = rawLight / 1023.0f;
-    float temp  = rawTemp  / 1023.0f;
+    // --- Normalize to 0–1 ---
+    float light    = 100.0 - (rawLight * 100.0 / 1023.0); // or just rawlihgt * 100/ 1023.0 (depending on sensor type)
+    float temp     = rawTemp * (5.0 / 1023.0) * 100.0; // normalize: (voltage/ max sensor value) * 100
+    float humidity = rawHumid * 100 / 1023.0f; // might need to further normalize depending on the sensor
 
     // --- ML prediction ---
-    float probRain = predict(light, temp);  
-    // predict() already applies sigmoid
+    float probRain = predict(temp, humidity, light);
 
-    // --- Serial output (for debugging) ---
+    // --- Serial output ---
     Serial.print("Light=");
     Serial.print(light);
     Serial.print(" Temp=");
     Serial.print(temp);
+    Serial.print(" Hum=");
+    Serial.print(humidity);
     Serial.print(" Prob=");
     Serial.println(probRain);
 
-    // --- Display on LCD (simple) ---
+    // --- LCD ---
     lcd.clear();
     lcd.setCursor(0, 0);
-    // lcd.print("RainProb:");
+    lcd.print("Rain prob:");
 
     lcd.setCursor(0, 1);
-    lcd.print(probRain, 2); // show 2 decimals (0.00–1.00)
+    lcd.print(probRain, 2);
 
     delay(1000);
 }

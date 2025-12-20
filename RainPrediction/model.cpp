@@ -11,15 +11,16 @@ inline float sigmoid(float x) {
     return 1.0f / (1.0f + expf(-x));
 }
 
-// Now takes two input features
-float predict(float x1, float x2) {
+// Now takes three input features
+float predict(float x1, float x2, float x3) {
     float h1[DENSE1_SIZE];
 
-    // First dense layer: now performs a 2-input dot product for each neuron
+    // First dense layer: now performs a 3-input dot product for each neuron
     for (int i = 0; i < DENSE1_SIZE; ++i) {
         float z = 0.0f;
         z += x1 * W1(i, 0);
         z += x2 * W1(i, 1);
+        z += x3 * W2(i, 2);
         z += b1(i);
         h1[i] = relu(z);
     }

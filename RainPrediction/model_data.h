@@ -11,11 +11,12 @@ extern const float b2_data[];
 extern const float W3_data[];
 extern const float b3_data[];
 
+const int INPUT_SIZE = 3;
 const int DENSE1_SIZE = 16;
 const int DENSE2_SIZE = 16;
 
 inline float W1(int i, int j) {
-    return pgm_read_float_near(W1_data + i*2 + j);
+    return pgm_read_float_near(W1_data + i*INPUT_SIZE + j);
 }
 
 inline float b1(int i) {
