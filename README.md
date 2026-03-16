@@ -1,3 +1,5 @@
+Colab code: https://colab.research.google.com/drive/178MkaW9BjXr4Q-a6OIV20ni6v7QQsL7p?usp=sharing
+
 # Arduino-Uno-R3-Rain-prediction
 A small NN predicting chance of rain from humidity+temperature(+light) data and displaying the prediction. Works on Arduino UNO R3.
 
