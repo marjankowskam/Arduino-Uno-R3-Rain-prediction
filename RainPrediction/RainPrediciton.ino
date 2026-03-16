@@ -1,5 +1,5 @@
 #include "model.h"
-#include <LiquidCrystal.h>
+// #include <LiquidCrystal.h>
 
 // ----------- SENSOR PINS ------------
 const int LIGHT_PIN = A0;
@@ -7,16 +7,24 @@ const int TEMP_PIN  = A1;
 const int HUMID_PIN = A2;
 
 // ----------- LCD (PARALLEL) --------
-LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
+// Wiring:
+//
+// RS -> pin 7
+// E  -> pin 8
+// D4 -> pin 9
+// D5 -> pin 10
+// D6 -> pin 11
+// D7 -> pin 12
+// LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
 void setup() {
     Serial.begin(9600);
 
-    lcd.begin(16, 2);
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("WeatherPredict");
-    delay(1200);
+    // lcd.begin(16, 2);
+    // lcd.clear();
+    // lcd.setCursor(0, 0);
+    // lcd.print("WeatherPredict");
+    // delay(1200);
 }
 
 void loop() {
@@ -45,12 +53,12 @@ void loop() {
     Serial.println(probRain);
 
     // --- LCD ---
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Rain prob:");
+    // lcd.clear();
+    // lcd.setCursor(0, 0);
+    // lcd.print("Rain prob:");
 
-    lcd.setCursor(0, 1);
-    lcd.print(probRain, 2);
+    // lcd.setCursor(0, 1);
+    // lcd.print(probRain, 2);
 
     delay(1000);
 }
