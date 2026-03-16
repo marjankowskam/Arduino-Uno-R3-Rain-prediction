@@ -35,16 +35,16 @@ void loop() {
     int rawHumid = analogRead(HUMID_PIN);
 
     // --- Normalize to 0–1 ---
-    float light    = 100.0 - (rawLight * 100.0 / 1023.0); // or just rawlihgt * 100/ 1023.0 (depending on sensor type)
+    float cloudCover    = 100.0 - (rawLight * 100.0 / 1023.0); // or just rawlihgt * 100/ 1023.0 (depending on sensor type)
     float temp     = rawTemp * (5.0 / 1023.0) * 100.0; // normalize: (voltage/ max sensor value) * 100
     float humidity = rawHumid * 100 / 1023.0f; // might need to further normalize depending on the sensor
 
     // --- ML prediction ---
-    float probRain = predict(temp, humidity, light);
+    float probRain = predict(temp, humidity, cloudCover);
 
     // --- Serial output ---
-    Serial.print("Light=");
-    Serial.print(light);
+    Serial.print("Clouds=");
+    Serial.print(cloudCover);
     Serial.print(" Temp=");
     Serial.print(temp);
     Serial.print(" Hum=");
