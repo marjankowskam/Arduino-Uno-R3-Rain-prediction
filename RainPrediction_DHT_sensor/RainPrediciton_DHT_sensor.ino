@@ -1,56 +1,75 @@
 #include "model.h"
-#include <LiquidCrystal.h>
+// #include <LiquidCrystal.h>
+
+//-------- HUMIDITY + TEMP sensor ---------
+#include <DHT.h>
+
+#define DHTPIN 7 //digital pin the sensor is connected to 
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
 
 // ----------- SENSOR PINS ------------
 const int LIGHT_PIN = A0;
-const int TEMP_PIN  = A1;
-const int HUMID_PIN = A2;
+
 
 // ----------- LCD (PARALLEL) --------
-LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
+// Wiring:
+//
+// RS -> pin 7
+// E  -> pin 8
+// D4 -> pin 9
+// D5 -> pin 10
+// D6 -> pin 11
+// D7 -> pin 12
+// LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
 void setup() {
     Serial.begin(9600);
-
-    lcd.begin(16, 2);
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("WeatherPredict");
-    delay(1200);
+    dht.begin();
+    // lcd.begin(16, 2);
+    // lcd.clear();
+    // lcd.setCursor(0, 0);
+    // lcd.print("WeatherPredict");
+    // delay(1200);
 }
 
 void loop() {
 
     // --- Read sensors ---
     int rawLight = analogRead(LIGHT_PIN);
-    int rawTemp  = analogRead(TEMP_PIN);
-    int rawHumid = analogRead(HUMID_PIN);
+    float humidity = dht.readHumidity();       // %RH
+    float temperature = dht.readTemperature(); // °C
 
     // --- Normalize to 0–1 ---
-    float light    = 100.0 - (rawLight * 100.0 / 1023.0); // or just rawlihgt * 100/ 1023.0 (depending on sensor type)
-    float temp     = rawTemp * (5.0 / 1023.0) * 100.0; // normalize: (voltage/ max sensor value) * 100
-    float humidity = rawHumid * 100 / 1023.0f; // might need to further normalize depending on the sensor
+    float cloudCover    = 100.0 - (rawLight * 100.0 / 1023.0); // or just rawlihgt * 100/ 1023.0 (depending on sensor type)
+    // float tempFahrenheit     = rawTemp * (5.0 / 1023.0) * 100.0; // normalize: (voltage/ max sensor value) * 100
+    // float temp = (tempFahrenheit - 32) /1.8;
+
+    if (isnan(humidity) || isnan(temperature)) {
+        Serial.println("Failed to read from DHT sensor!");
+    } 
 
     // --- ML prediction ---
-    float probRain = predict(temp, humidity, light);
+    float probRain = predict(temperature, humidity, cloudCover);
 
     // --- Serial output ---
-    Serial.print("Light=");
-    Serial.print(light);
+    Serial.print("Clouds=");
+    Serial.print(cloudCover);
     Serial.print(" Temp=");
-    Serial.print(temp);
+    Serial.print(temperature);
     Serial.print(" Hum=");
     Serial.print(humidity);
     Serial.print(" Prob=");
     Serial.println(probRain);
 
     // --- LCD ---
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Rain prob:");
+    // lcd.clear();
+    // lcd.setCursor(0, 0);
+    // lcd.print("Rain prob:");
 
-    lcd.setCursor(0, 1);
-    lcd.print(probRain, 2);
+    // lcd.setCursor(0, 1);
+    // lcd.print(probRain, 2);
 
     delay(1000);
 }
