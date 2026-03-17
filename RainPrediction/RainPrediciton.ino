@@ -4,7 +4,6 @@
 // ----------- SENSOR PINS ------------
 const int LIGHT_PIN = A0;
 const int TEMP_PIN  = A1;
-const int HUMID_PIN = A2;
 
 // ----------- LCD (PARALLEL) --------
 // Wiring:
@@ -32,13 +31,12 @@ void loop() {
     // --- Read sensors ---
     int rawLight = analogRead(LIGHT_PIN);
     int rawTemp  = analogRead(TEMP_PIN);
-    int rawHumid = analogRead(HUMID_PIN);
 
     // --- Normalize to 0–1 ---
     float cloudCover    = 100.0 - (rawLight * 100.0 / 1023.0); // or just rawlihgt * 100/ 1023.0 (depending on sensor type)
     float temp     = rawTemp * (5.0 / 1023.0) * 100.0; // normalize: (voltage/ max sensor value) * 100
-    float humidity = rawHumid * 100 / 1023.0f; // might need to further normalize depending on the sensor
-
+    float humidity = 30.0f //set manually if no sensor available
+    
     // --- ML prediction ---
     float probRain = predict(temp, humidity, cloudCover);
 
